@@ -14,8 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if ($result) {
             $message = "File uploaded successfully!";
         } else {
-            $message = "File upload failed.";
+            $message = "File upload failed. Please try again.";
         }
+    } elseif (isset($_FILES['file']) && $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+        $errorMessages = [
+            UPLOAD_ERR_INI_SIZE => 'File is too large.',
+            UPLOAD_ERR_FORM_SIZE => 'File is too large.',
+            UPLOAD_ERR_PARTIAL => 'File was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder.',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+        ];
+        $message = $errorMessages[$_FILES['file']['error']] ?? 'Unknown upload error.';
     } else {
         $message = "Please select a file to upload.";
     }
@@ -65,7 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <?php renderNavigation('upload.php'); ?>
             
             <?php if ($message): ?>
-                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <?php 
+                $alertType = (strpos($message, 'successfully') !== false) ? 'alert-success' : 'alert-danger';
+                $alertIcon = (strpos($message, 'successfully') !== false) ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+                ?>
+                <div class="alert <?php echo $alertType; ?> alert-dismissible fade show" role="alert">
+                    <i class="<?php echo $alertIcon; ?> me-2"></i>
                     <?php echo $message; ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
@@ -81,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 <p class="text-muted mb-4">Support for documents, images, and web files</p>
                                 
                                 <form method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" name="action" value="upload">
                                     <div class="mb-3">
                                         <input type="file" name="file" class="form-control" required>
                                     </div>

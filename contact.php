@@ -3,7 +3,7 @@ require_once 'config.php';
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'contact') {
-    $success = addMessage($_POST['sender_name'], $_POST['sender_email'], $_POST['receiver_name'], $_POST['content']);
+    $success = addContactMessage($_POST['sender_name'], $_POST['sender_email'], $_POST['content']);
     if ($success) {
         $message = "Your message has been sent successfully!";
     } else {

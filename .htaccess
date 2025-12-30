@@ -1,4 +1,8 @@
 RewriteEngine On
+# Don't rewrite requests for existing files or directories
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+# Don't rewrite requests for uploads directory (allow PHP execution)
+RewriteCond %{REQUEST_URI} !^/uploads/
+# Route everything else to index.php
 RewriteRule ^(.*)$ index.php [L]

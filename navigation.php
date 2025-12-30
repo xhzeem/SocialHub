@@ -17,6 +17,7 @@ function renderNavigation($currentPage = '') {
     if ($isLoggedIn) {
         $navItems["profile.php?user_id=$userId"] = ['icon' => 'fas fa-user', 'label' => 'Profile'];
         $navItems['contacts.php'] = ['icon' => 'fas fa-envelope', 'label' => 'Contacts'];
+        $navItems['admin_messages.php'] = ['icon' => 'fas fa-comments', 'label' => 'Messages'];
     }
     
     ?>

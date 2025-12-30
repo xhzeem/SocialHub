@@ -113,6 +113,48 @@ function addComment($postId, $userId, $content) {
     return $conn->query($sql);
 }
 
+function uploadFile($file) {
+    $uploadDir = 'uploads/';
+    
+    // Debug: Log file info
+    error_log("Upload attempt - File info: " . print_r($file, true));
+    
+    // Check if uploads directory exists, if not create it
+    if (!is_dir($uploadDir)) {
+        if (!mkdir($uploadDir, 0755, true)) {
+            error_log("Failed to create uploads directory");
+            return false;
+        }
+        error_log("Created uploads directory");
+    }
+    
+    // Check directory permissions
+    if (!is_writable($uploadDir)) {
+        error_log("Uploads directory is not writable");
+        return false;
+    }
+    
+    $fileName = basename($file['name']);
+    $targetPath = $uploadDir . $fileName;
+    
+    // Check if file already exists
+    if (file_exists($targetPath)) {
+        $fileName = time() . '_' . $fileName;
+        $targetPath = $uploadDir . $fileName;
+    }
+    
+    error_log("Moving file from " . $file['tmp_name'] . " to " . $targetPath);
+    
+    // Move uploaded file
+    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+        error_log("Upload successful: " . $targetPath);
+        return true;
+    } else {
+        error_log("Upload failed - Error code: " . $file['error'] . " - Temp file exists: " . file_exists($file['tmp_name']));
+        return false;
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     switch ($_POST['action']) {
         case 'login':
