@@ -1,0 +1,22 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8066:80"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=vulnerable_social
+    volumes:
+      - ./uploads:/var/www/html/uploads
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: vulnerable_social
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
