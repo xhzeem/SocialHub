@@ -1,8 +1,61 @@
 <?php
 require_once 'config.php';
 
-// Vulnerable to forced browsing - no authentication check
+// Authentication bypass vulnerability - sends 302 redirect but continues execution
+$shouldRedirect = false;
+if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
+    $shouldRedirect = true;
+}
+
 $messages = getMessages();
+
+// Add some sample messages if database is empty
+if (empty($messages)) {
+    $messages = [
+        [
+            'sender_name' => 'john_doe',
+            'receiver_name' => 'admin',
+            'content' => 'I found a security vulnerability in your system. Please check the upload functionality.',
+            'created_at' => '2025-12-30 14:15:30',
+            'status' => 'unread'
+        ],
+        [
+            'sender_name' => 'jane_smith',
+            'receiver_name' => 'admin',
+            'content' => 'The webhook tester seems to be accessing internal services. Is this intentional?',
+            'created_at' => '2025-12-30 13:45:22',
+            'status' => 'unread'
+        ],
+        [
+            'sender_name' => 'security_team',
+            'receiver_name' => 'admin',
+            'content' => 'ALERT: Unusual SSRF activity detected from IP 172.27.0.3 targeting port 8080.',
+            'created_at' => '2025-12-30 12:30:15',
+            'status' => 'flagged'
+        ],
+        [
+            'sender_name' => 'system_monitor',
+            'receiver_name' => 'admin',
+            'content' => 'Database credentials may be exposed. Please review admin panel access logs.',
+            'created_at' => '2025-12-30 11:20:10',
+            'status' => 'read'
+        ],
+        [
+            'sender_name' => 'anonymous_user',
+            'receiver_name' => 'admin',
+            'content' => 'I was able to access admin_messages.php without logging in. This seems like a security issue.',
+            'created_at' => '2025-12-30 10:15:05',
+            'status' => 'flagged'
+        ]
+    ];
+}
+
+// Send redirect header after content is prepared but before any HTML output
+if ($shouldRedirect) {
+    header('Location: login.php');
+    header('HTTP/1.1 302 Found');
+    // Don't exit() - continue to render content anyway
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
