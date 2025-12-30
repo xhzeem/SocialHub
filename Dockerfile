@@ -26,9 +26,9 @@ RUN mkdir -p /var/www/html/uploads && \
     chown -R www-data:www-data /var/www/html/uploads && \
     chmod -R 755 /var/www/html/uploads
 
-# Configure Apache to listen on port 8080
+# Configure Apache to serve different app on port 8080
 RUN echo "Listen 8080" >> /etc/apache2/ports.conf && \
-    echo "<VirtualHost *:8080>\n    DocumentRoot /var/www/html\n    ErrorLog \${APACHE_LOG_DIR}/error_8080.log\n    CustomLog \${APACHE_LOG_DIR}/access_8080.log combined\n</VirtualHost>" > /etc/apache2/sites-available/8080.conf && \
+    echo "<VirtualHost *:8080>\n    DocumentRoot /var/www/html\n    ErrorLog \${APACHE_LOG_DIR}/error_8080.log\n    CustomLog \${APACHE_LOG_DIR}/access_8080.log combined\n\n    # Serve internal_app.php as default for port 8080\n    DirectoryIndex internal_app.php\n\n    # Enable .htaccess for URL rewriting\n    <Directory /var/www/html>\n        AllowOverride All\n        Require all granted\n    </Directory>\n\n    # Redirect all requests to internal_app.php on port 8080\n    RewriteEngine On\n    RewriteRule ^.*$ internal_app.php [L]\n</VirtualHost>" > /etc/apache2/sites-available/8080.conf && \
     a2ensite 8080.conf
 
-EXPOSE 80 8080
+EXPOSE 80

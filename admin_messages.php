@@ -1,12 +1,7 @@
 <?php
 require_once 'config.php';
 
-// Check if user is admin
-if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'admin') {
-    header('Location: login.php');
-    exit;
-}
-
+// Vulnerable to forced browsing - no authentication check
 $messages = getMessages();
 ?>
 <!DOCTYPE html>
