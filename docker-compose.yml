@@ -10,7 +10,11 @@ services:
       - DB_USER=root
       - DB_PASSWORD=password
       - DB_NAME=vulnerable_social
-
+    volumes:
+      - ./app:/var/www/html
+      - ./internal-content:/var/www/html/internal
+    networks:
+      - app-network
   db:
     image: mysql:5.7
     environment:
@@ -18,3 +22,9 @@ services:
       MYSQL_DATABASE: vulnerable_social
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
